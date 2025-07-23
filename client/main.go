@@ -7,43 +7,12 @@ import (
 	"log"
 	"time"
 
-	"github.com/hashicorp/consul/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func discoverService(serviceName string) (string, error) {
-	config := api.DefaultConfig()
-	config.Address = "127.0.0.1:8500"
-	client, err := api.NewClient(config)
-	if err != nil {
-		return "", fmt.Errorf("failed to create Consul client: %v", err)
-	}
-
-	// 查询服务
-	services, _, err := client.Health().Service(serviceName, "", true, nil)
-	if err != nil {
-		return "", fmt.Errorf("failed to discover service: %v", err)
-	}
-	if len(services) == 0 {
-		return "", fmt.Errorf("no healthy service instances found for %s", serviceName)
-	}
-
-	// 选择第一个健康的服务实例
-	service := services[0]
-	return fmt.Sprintf("%s:%d", service.Service.Address, service.Service.Port), nil
-}
-
 func main() {
-
-	// 从 Consul 发现服务地址
-	serviceAddr, err := discoverService("todo-service")
-	if err != nil {
-		log.Fatalf("Service discovery failed: %v", err)
-	}
-	log.Printf("Discovered service at %s", serviceAddr)
-
-	conn, err := grpc.NewClient(serviceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient("127.0.0.1:50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal("client error:", err)
 	}
@@ -66,9 +35,9 @@ func main() {
 	}
 	fmt.Println("list todo success response:", respl.Todos)
 
-	// respc, err := client.CompleteTodo(ctx, &proto.CompleteTodoRequest{Id: "1753024446"})
-	// if err != nil {
-	// 	log.Fatal("complete todo error:", err)
-	// }
-	// fmt.Println("complete todo success response:", respc.Todo)
+	respc, err := client.CompleteTodo(ctx, &proto.CompleteTodoRequest{Id: "1753024446"})
+	if err != nil {
+		log.Fatal("complete todo error:", err)
+	}
+	fmt.Println("complete todo success response:", respc.Todo)
 }
