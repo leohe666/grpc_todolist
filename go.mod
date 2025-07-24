@@ -5,6 +5,7 @@ go 1.23.0
 toolchain go1.23.11
 
 require (
+	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0
 	go.etcd.io/etcd/client/v3 v3.6.3
 	google.golang.org/grpc v1.73.0
 	google.golang.org/protobuf v1.36.6
