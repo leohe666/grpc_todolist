@@ -49,6 +49,7 @@ func main() {
 		log.Fatalf("failed to discover service: %v", err)
 	}
 
+	fmt.Println("addresses:", addrs)
 	conn, err := grpc.NewClient(addrs[0], grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal("client error:", err)

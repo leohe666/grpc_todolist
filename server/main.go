@@ -21,7 +21,7 @@ type server struct {
 
 func (s *server) AddTodo(ctx context.Context, req *proto.AddTodoRequest) (*proto.AddTodoResponse, error) {
 	id := fmt.Sprintf("%d", time.Now().Unix())
-	add := proto.Todo{Title: req.Title, Description: req.Description, Status: proto.Status_TODO_PENDING}
+	add := proto.Todo{Title: req.Title + "--50053", Description: req.Description, Status: proto.Status_TODO_PENDING}
 	add.Id = id
 	s.mu.Lock()
 	if s.todo == nil {
@@ -84,7 +84,7 @@ func (s *server) CompleteTodo(ctx context.Context, req *proto.CompleteTodoReques
 	return &resp, nil
 }
 func main() {
-	listener, err := net.Listen("tcp", ":50052")
+	listener, err := net.Listen("tcp", ":50053")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -101,7 +101,7 @@ func main() {
 
 	// 注册服务
 	serviceName := "todolist"
-	addr := "localhost:50052"
+	addr := "localhost:50053"
 	if err := registerService(cli, serviceName, addr, 10); err != nil {
 		log.Fatalf("failed to register service: %v", err)
 	}
